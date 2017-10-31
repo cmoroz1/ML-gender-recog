@@ -32,9 +32,23 @@ norm_X_train = scaler.transform(X_train)
 norm_X_test = scaler.transform(X_test)
 
 # Create MLP Classifier object, with set max_iter and random_state
-mlp = MLPClassifier(max_iter=2000, random_state=0)
+mlp = MLPClassifier(max_iter=80, random_state=0)
 mlp.fit(norm_X_train,Y_train)
 
 # Visualize the accuracy of the model
 print("Training set score: %f" % mlp.score(norm_X_train, Y_train))
 print("Test set score: %f" % mlp.score(norm_X_test, Y_test))
+
+# train_scores = []
+# test_scores = []
+# for i in np.arange(70,90,1):
+#     print("Training %d max_iter" % (i))
+#     mlp = MLPClassifier(max_iter=i, random_state=0)
+#     mlp.fit(norm_X_train,Y_train)
+#     train_scores.append(mlp.score(norm_X_train, Y_train))
+#     test_scores.append(mlp.score(norm_X_test, Y_test))
+#
+# plt.plot(np.arange(70,90,1), train_scores)
+# plt.plot(np.arange(70,90,1), test_scores)
+# plt.legend(['train acc','test acc'])
+# plt.show()
