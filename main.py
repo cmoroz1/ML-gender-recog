@@ -31,15 +31,10 @@ scaler = StandardScaler().fit(X_train)
 norm_X_train = scaler.transform(X_train)
 norm_X_test = scaler.transform(X_test)
 
-# Start timer to see how long it takes to train
-t0 = time.time()
-
 # Create MLP Classifier object, with set max_iter and random_state
 mlp = MLPClassifier(max_iter=2000, random_state=0)
 mlp.fit(norm_X_train,Y_train)
-t1 = time.time()
 
 # Visualize the accuracy of the model
-print("Took %.3f sec to train model" % (t1-t0))
 print("Training set score: %f" % mlp.score(norm_X_train, Y_train))
 print("Test set score: %f" % mlp.score(norm_X_test, Y_test))
