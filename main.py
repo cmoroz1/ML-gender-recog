@@ -6,6 +6,7 @@ import time
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import GridSearchCV
 
 data = pd.read_csv('voice.csv')
 
@@ -31,7 +32,7 @@ scaler = StandardScaler().fit(X_train)
 norm_X_train = scaler.transform(X_train)
 norm_X_test = scaler.transform(X_test)
 
-# Create MLP Classifier object, with set max_iter and random_state
+# Create MLP Classifier object, with set max_iter and random_state (was 80)
 mlp = MLPClassifier(max_iter=80, random_state=0)
 mlp.fit(norm_X_train,Y_train)
 
@@ -39,6 +40,20 @@ mlp.fit(norm_X_train,Y_train)
 print("Training set score: %f" % mlp.score(norm_X_train, Y_train))
 print("Test set score: %f" % mlp.score(norm_X_test, Y_test))
 
+################################################################################
+# Used to find the optimal parameters for the model
+################################################################################
+# mlp = MLPClassifier(random_state=0)
+# alphas = 10.0 ** -np.arange(1,7)
+# iterations = np.arange(20,2000,20)
+# params = {'alpha':alphas, 'max_iter':iterations}
+# clf = GridSearchCV(mlp, params)
+# clf.fit(norm_X_train,Y_train)
+# print(clf.best_params_)
+
+################################################################################
+# Used to visualize how the accuracy changed with max_iter
+################################################################################
 # train_scores = []
 # test_scores = []
 # for i in np.arange(70,90,1):
