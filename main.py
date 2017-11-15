@@ -7,6 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import GridSearchCV
+from sklearn.svm import SVC
+from sklearn.metrics import precision_recall_fscore_support
 
 data = pd.read_csv('voice.csv')
 
@@ -35,13 +37,37 @@ norm_X_test = scaler.transform(X_test)
 # Create MLP Classifier object, with set max_iter and random_state (was 80)
 mlp = MLPClassifier(max_iter=80, random_state=0)
 mlp.fit(norm_X_train,Y_train)
+mlp_Y_pred = mlp.predict(norm_X_test)
+mlp_metrics = precision_recall_fscore_support(mlp_Y_pred, Y_test)
+mlp_precision = np.average(mlp_metrics[0]) # First array is precision of each class
+mlp_recall = np.average(mlp_metrics[1]) # Second array is accuracy of each class
+mlp_f1 = 2 * (mlp_precision * mlp_recall) / (mlp_precision + mlp_recall)
 
-# Visualize the accuracy of the model
-print("Training set score: %f" % mlp.score(norm_X_train, Y_train))
-print("Test set score: %f" % mlp.score(norm_X_test, Y_test))
+# Create a SVM classifier with optimal parameters specified below
+svm = SVC(C = 2, kernel = 'rbf')
+svm.fit(norm_X_train,Y_train)
+svm_Y_pred = svm.predict(norm_X_test)
+svm_metrics = precision_recall_fscore_support(svm_Y_pred, Y_test)
+svm_precision = np.average(svm_metrics[0]) # First array is precision of each class
+svm_recall = np.average(svm_metrics[1]) # Second array is accuracy of each class
+svm_f1 = 2 * (svm_precision * svm_recall) / (svm_precision + svm_recall)
+
+# Output the metrics of the models
+print("Neural Network Model Test Set Metrics:")
+print("\tAccuracy:\t%f" % mlp.score(norm_X_test, Y_test))
+print("\tPrecision:\t%f" % mlp_precision)
+print("\tRecall:\t\t%f" % mlp_recall)
+print("\tF1:\t\t%f" % mlp_f1)
+print("")
+print("Support Vector Machine Model Test Set Metrics:")
+print("\tAccuracy:\t%f" % svm.score(norm_X_test, Y_test))
+print("\tPrecision:\t%f" % svm_precision)
+print("\tRecall:\t\t%f" % svm_recall)
+print("\tF1:\t\t%f" % svm_f1)
 
 ################################################################################
-# Used to find the optimal parameters for the model
+# Used to find the optimal parameters for the Neural Network model
+# max_iter = 80 and random_state = 0
 ################################################################################
 # mlp = MLPClassifier(random_state=0)
 # alphas = 10.0 ** -np.arange(1,7)
@@ -52,7 +78,7 @@ print("Test set score: %f" % mlp.score(norm_X_test, Y_test))
 # print(clf.best_params_)
 
 ################################################################################
-# Used to visualize how the accuracy changed with max_iter
+# Used to visualize how accuracy changed with max_iter for Neural Network model
 ################################################################################
 # train_scores = []
 # test_scores = []
@@ -67,3 +93,15 @@ print("Test set score: %f" % mlp.score(norm_X_test, Y_test))
 # plt.plot(np.arange(70,90,1), test_scores)
 # plt.legend(['train acc','test acc'])
 # plt.show()
+
+################################################################################
+# Used to find the optimal parameters for the SVM model
+# C = 2 and kernel = 'rbf'
+################################################################################
+# C = np.array([0.25,0.5,0.75,1,1.25,1.5,1.75,2,2.25,2.5])
+# kernels = ['linear','poly','rbf','sigmoid']
+# for c in C:
+#     for k in kernels:
+#         svm = SVC(C = c, kernel = k)
+#         svm.fit(norm_X_train,Y_train)
+#         print("C: %f, kernel: %s, accuracy: %.8f" % (c, k, svm.score(norm_X_test,Y_test)))
