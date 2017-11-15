@@ -34,8 +34,8 @@ scaler = StandardScaler().fit(X_train)
 norm_X_train = scaler.transform(X_train)
 norm_X_test = scaler.transform(X_test)
 
-# Create MLP Classifier object, with set max_iter and random_state (was 80)
-mlp = MLPClassifier(max_iter=80, random_state=0)
+# Create MLP Classifier object, with random_state = 0
+mlp = MLPClassifier(max_iter = 500, random_state=0)
 mlp.fit(norm_X_train,Y_train)
 mlp_Y_pred = mlp.predict(norm_X_test)
 mlp_metrics = precision_recall_fscore_support(mlp_Y_pred, Y_test)
