@@ -64,3 +64,44 @@ print("\tAccuracy:\t%f" % svm.score(norm_X_test, Y_test))
 print("\tPrecision:\t%f" % svm_precision)
 print("\tRecall:\t\t%f" % svm_recall)
 print("\tF1:\t\t%f" % svm_f1)
+
+################################################################################
+# Used to find the optimal parameters for the Neural Network model
+# max_iter = 80 and random_state = 0
+################################################################################
+# mlp = MLPClassifier(random_state=0)
+# alphas = 10.0 ** -np.arange(1,7)
+# iterations = np.arange(20,2000,20)
+# params = {'alpha':alphas, 'max_iter':iterations}
+# clf = GridSearchCV(mlp, params)
+# clf.fit(norm_X_train,Y_train)
+# print(clf.best_params_)
+
+################################################################################
+# Used to visualize how accuracy changed with max_iter for Neural Network model
+################################################################################
+# train_scores = []
+# test_scores = []
+# for i in np.arange(70,90,1):
+#     print("Training %d max_iter" % (i))
+#     mlp = MLPClassifier(max_iter=i, random_state=0)
+#     mlp.fit(norm_X_train,Y_train)
+#     train_scores.append(mlp.score(norm_X_train, Y_train))
+#     test_scores.append(mlp.score(norm_X_test, Y_test))
+#
+# plt.plot(np.arange(70,90,1), train_scores)
+# plt.plot(np.arange(70,90,1), test_scores)
+# plt.legend(['train acc','test acc'])
+# plt.show()
+
+################################################################################
+# Used to find the optimal parameters for the SVM model
+# C = 2 and kernel = 'rbf'
+################################################################################
+# C = np.array([0.25,0.5,0.75,1,1.25,1.5,1.75,2,2.25,2.5])
+# kernels = ['linear','poly','rbf','sigmoid']
+# for c in C:
+#     for k in kernels:
+#         svm = SVC(C = c, kernel = k)
+#         svm.fit(norm_X_train,Y_train)
+#         print("C: %f, kernel: %s, accuracy: %.8f" % (c, k, svm.score(norm_X_test,Y_test)))
