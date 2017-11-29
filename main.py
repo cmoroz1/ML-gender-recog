@@ -9,6 +9,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 from sklearn.metrics import precision_recall_fscore_support
+from sklearn.model_selection import cross_val_score
 
 data = pd.read_csv('voice.csv')
 
@@ -34,6 +35,14 @@ scaler = StandardScaler().fit(X_train)
 norm_X_train = scaler.transform(X_train)
 norm_X_test = scaler.transform(X_test)
 
+# Ten-fold Cross Validation on the MLP Classifier (checking accuracy of model)
+# Only do cross validation on the training set, NOT THE TEST SET
+mlp = MLPClassifier(max_iter=500, random_state=0)
+print("Starting MLP 10-fold cross validation...")
+mlp_score = cross_val_score(mlp, norm_X_train, Y_train, cv=10, verbose=3, n_jobs=1)
+mlp_score = np.average(mlp_score)
+print()
+
 # Create MLP Classifier object, with random_state = 0
 mlp = MLPClassifier(max_iter = 500, random_state=0)
 mlp.fit(norm_X_train,Y_train)
@@ -42,6 +51,14 @@ mlp_metrics = precision_recall_fscore_support(mlp_Y_pred, Y_test)
 mlp_precision = np.average(mlp_metrics[0]) # First array is precision of each class
 mlp_recall = np.average(mlp_metrics[1]) # Second array is accuracy of each class
 mlp_f1 = 2 * (mlp_precision * mlp_recall) / (mlp_precision + mlp_recall)
+
+# Ten-fold Cross Validation on the SVM Classifier (checking accuracy of model)
+# Only do cross validation on the training set, NOT THE TEST SET
+svm = SVC(C = 2, kernel = 'rbf')
+print("Starting SVM 10-fold cross validation...")
+svm_score = cross_val_score(svm, norm_X_train, Y_train, cv=10, verbose=3, n_jobs=1)
+svm_score = np.average(svm_score)
+print()
 
 # Create a SVM classifier with optimal parameters specified below
 svm = SVC(C = 2, kernel = 'rbf')
@@ -54,12 +71,14 @@ svm_f1 = 2 * (svm_precision * svm_recall) / (svm_precision + svm_recall)
 
 # Output the metrics of the models
 print("Neural Network Model Test Set Metrics:")
+print("\tCross Val Acc:\t%f" % mlp_score)
 print("\tAccuracy:\t%f" % mlp.score(norm_X_test, Y_test))
 print("\tPrecision:\t%f" % mlp_precision)
 print("\tRecall:\t\t%f" % mlp_recall)
 print("\tF1:\t\t%f" % mlp_f1)
 print("")
 print("Support Vector Machine Model Test Set Metrics:")
+print("\tCross Val Acc:\t%f" % svm_score)
 print("\tAccuracy:\t%f" % svm.score(norm_X_test, Y_test))
 print("\tPrecision:\t%f" % svm_precision)
 print("\tRecall:\t\t%f" % svm_recall)
