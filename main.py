@@ -10,6 +10,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import cross_val_score
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.metrics import roc_curve, auc
 
 data = pd.read_csv('voice.csv')
 
@@ -52,6 +54,21 @@ mlp_precision = np.average(mlp_metrics[0]) # First array is precision of each cl
 mlp_recall = np.average(mlp_metrics[1]) # Second array is accuracy of each class
 mlp_f1 = 2 * (mlp_precision * mlp_recall) / (mlp_precision + mlp_recall)
 
+# Creates a ROC Curve for the MLP trained above
+classifier = OneVsRestClassifier(MLPClassifier(max_iter = 500, random_state=0))
+y_score = classifier.fit(norm_X_train, Y_train).predict(norm_X_test)
+fpr, tpr, _ = roc_curve(Y_test, y_score)
+roc_auc_MLP = auc(fpr, tpr)
+plt.figure()
+lw = 2
+plt.plot(fpr, tpr, color='red', lw=lw)
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curves for Different Models')
+plt.legend(loc="lower right")
+
 # Ten-fold Cross Validation on the SVM Classifier (checking accuracy of model)
 # Only do cross validation on the training set, NOT THE TEST SET
 svm = SVC(C = 2, kernel = 'rbf')
@@ -69,6 +86,19 @@ svm_precision = np.average(svm_metrics[0]) # First array is precision of each cl
 svm_recall = np.average(svm_metrics[1]) # Second array is accuracy of each class
 svm_f1 = 2 * (svm_precision * svm_recall) / (svm_precision + svm_recall)
 
+# Creates a ROC Curve for the SVM trained above
+classifier = OneVsRestClassifier(SVC(C = 2, kernel = 'rbf'))
+y_score = classifier.fit(norm_X_train, Y_train).decision_function(norm_X_test)
+fpr, tpr, _ = roc_curve(Y_test, y_score)
+roc_auc_SVM = auc(fpr, tpr)
+plt.plot(fpr, tpr, color='navy', lw=lw)
+plt.plot([0, 1], [0, 1], color='black', lw=lw, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.legend(['ROC Curve for MLP (area = %0.3f)' % roc_auc_MLP,
+            'ROC Curve for SVM (area = %0.3f)' % roc_auc_SVM,
+            'Standard Curve'],loc="lower right")
+
 # Output the metrics of the models
 print("Neural Network Model Test Set Metrics:")
 print("\tCross Val Acc:\t%f" % mlp_score)
@@ -83,6 +113,8 @@ print("\tAccuracy:\t%f" % svm.score(norm_X_test, Y_test))
 print("\tPrecision:\t%f" % svm_precision)
 print("\tRecall:\t\t%f" % svm_recall)
 print("\tF1:\t\t%f" % svm_f1)
+
+plt.show()
 
 ################################################################################
 # Used to find the optimal parameters for the Neural Network model
