@@ -114,6 +114,7 @@ print("\tPrecision:\t%f" % svm_precision)
 print("\tRecall:\t\t%f" % svm_recall)
 print("\tF1:\t\t%f" % svm_f1)
 
+# Shows the ROC Curve plots that were made earlier
 plt.show()
 
 ################################################################################
